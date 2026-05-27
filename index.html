@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>二维魔方</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">3x3x3 exact 2D form</p>
+          <h1>二维魔方</h1>
+        </div>
+        <div class="status-strip" aria-live="polite">
+          <span id="statusText">已复原</span>
+          <span id="moveCount">0 步</span>
+          <span id="equivalenceText">54 贴纸 · 6 面转</span>
+        </div>
+      </header>
+
+      <section class="game-layout">
+        <section class="board-stage" aria-label="二维魔方棋盘">
+          <div class="mini-cube" aria-label="三维魔方预览">
+            <svg id="cube3d" viewBox="0 0 260 230" role="img" aria-label="三维魔方预览"></svg>
+          </div>
+          <svg id="cube2d" viewBox="0 0 1120 800" role="img" aria-label="严格二维等价魔方"></svg>
+        </section>
+
+        <aside class="control-panel" aria-label="游戏控制">
+          <section class="panel-section">
+            <h2>转动</h2>
+            <div class="turn-mode" role="group" aria-label="转动方向">
+              <button class="mode-button active" data-turn="1" aria-pressed="true">顺</button>
+              <button class="mode-button" data-turn="-1" aria-pressed="false">逆</button>
+              <button class="mode-button" data-turn="2" aria-pressed="false">180</button>
+            </div>
+            <div class="move-grid" role="group" aria-label="面转按钮">
+              <button data-move="U">U</button>
+              <button data-move="R">R</button>
+              <button data-move="F">F</button>
+              <button data-move="D">D</button>
+              <button data-move="L">L</button>
+              <button data-move="B">B</button>
+            </div>
+          </section>
+
+          <section class="panel-section">
+            <h2>局面</h2>
+            <div class="actions">
+              <button id="scrambleButton">打乱</button>
+              <button id="undoButton">撤销</button>
+              <button id="resetButton">复原</button>
+            </div>
+            <label class="range-row">
+              <span>打乱步数</span>
+              <input id="scrambleRange" type="range" min="8" max="40" value="22" />
+              <strong id="scrambleValue">22</strong>
+            </label>
+            <label class="switch-row">
+              <span>动画</span>
+              <input id="animationToggle" type="checkbox" checked />
+            </label>
+          </section>
+
+          <section class="panel-section">
+            <h2>记录</h2>
+            <ol id="historyList" class="history-list" aria-label="转动记录"></ol>
+          </section>
+        </aside>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
