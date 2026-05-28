@@ -4,74 +4,86 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>二维魔方</title>
-    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./styles.css?v=orbit-redesign" />
   </head>
   <body>
     <main class="app-shell">
       <header class="topbar">
         <div>
-          <p class="eyebrow">3x3x3 exact 2D form</p>
+          <p class="eyebrow">3x3x3 strict 2D projection</p>
           <h1>二维魔方</h1>
         </div>
         <div class="status-strip" aria-live="polite">
           <span id="statusText">已复原</span>
           <span id="moveCount">0 步</span>
-          <span id="equivalenceText">54 贴纸 · 6 面转</span>
+          <span>54 贴纸 · 合法三维面转</span>
         </div>
       </header>
 
-      <section class="game-layout">
-        <section class="board-stage" aria-label="二维魔方棋盘">
-          <div class="mini-cube" aria-label="三维魔方预览">
-            <svg id="cube3d" viewBox="0 0 260 230" role="img" aria-label="三维魔方预览"></svg>
-          </div>
-          <svg id="cube2d" viewBox="0 0 1120 800" role="img" aria-label="严格二维等价魔方"></svg>
-        </section>
+      <section class="board-stage" aria-label="二维魔方游戏区">
+        <div class="mini-cube" aria-label="三维魔方预览">
+          <svg id="cube3d" viewBox="0 0 260 230" role="img" aria-label="三维魔方预览"></svg>
+        </div>
 
-        <aside class="control-panel" aria-label="游戏控制">
-          <section class="panel-section">
-            <h2>转动</h2>
-            <div class="turn-mode" role="group" aria-label="转动方向">
-              <button class="mode-button active" data-turn="1" aria-pressed="true">顺</button>
-              <button class="mode-button" data-turn="-1" aria-pressed="false">逆</button>
-              <button class="mode-button" data-turn="2" aria-pressed="false">180</button>
-            </div>
-            <div class="move-grid" role="group" aria-label="面转按钮">
-              <button data-move="U">U</button>
-              <button data-move="R">R</button>
-              <button data-move="F">F</button>
-              <button data-move="D">D</button>
-              <button data-move="L">L</button>
-              <button data-move="B">B</button>
-            </div>
-          </section>
+        <svg id="cube2d" viewBox="0 0 1000 760" role="img" aria-label="二维轨道魔方"></svg>
 
-          <section class="panel-section">
-            <h2>局面</h2>
-            <div class="actions">
-              <button id="scrambleButton">打乱</button>
-              <button id="undoButton">撤销</button>
-              <button id="resetButton">复原</button>
-            </div>
-            <label class="range-row">
-              <span>打乱步数</span>
-              <input id="scrambleRange" type="range" min="8" max="40" value="22" />
-              <strong id="scrambleValue">22</strong>
-            </label>
-            <label class="switch-row">
-              <span>动画</span>
-              <input id="animationToggle" type="checkbox" checked />
-            </label>
-          </section>
+        <div class="face-control face-u" aria-label="U 面转动">
+          <span>U</span>
+          <button data-move="U" data-turn="-1" title="U 逆时针">↺</button>
+          <button data-move="U" data-turn="2" title="U 转 180 度">2</button>
+          <button data-move="U" data-turn="1" title="U 顺时针">↻</button>
+        </div>
+        <div class="face-control face-l" aria-label="L 面转动">
+          <span>L</span>
+          <button data-move="L" data-turn="-1" title="L 逆时针">↺</button>
+          <button data-move="L" data-turn="2" title="L 转 180 度">2</button>
+          <button data-move="L" data-turn="1" title="L 顺时针">↻</button>
+        </div>
+        <div class="face-control face-f" aria-label="F 面转动">
+          <span>F</span>
+          <button data-move="F" data-turn="-1" title="F 逆时针">↺</button>
+          <button data-move="F" data-turn="2" title="F 转 180 度">2</button>
+          <button data-move="F" data-turn="1" title="F 顺时针">↻</button>
+        </div>
+        <div class="face-control face-r" aria-label="R 面转动">
+          <span>R</span>
+          <button data-move="R" data-turn="-1" title="R 逆时针">↺</button>
+          <button data-move="R" data-turn="2" title="R 转 180 度">2</button>
+          <button data-move="R" data-turn="1" title="R 顺时针">↻</button>
+        </div>
+        <div class="face-control face-b" aria-label="B 面转动">
+          <span>B</span>
+          <button data-move="B" data-turn="-1" title="B 逆时针">↺</button>
+          <button data-move="B" data-turn="2" title="B 转 180 度">2</button>
+          <button data-move="B" data-turn="1" title="B 顺时针">↻</button>
+        </div>
+        <div class="face-control face-d" aria-label="D 面转动">
+          <span>D</span>
+          <button data-move="D" data-turn="-1" title="D 逆时针">↺</button>
+          <button data-move="D" data-turn="2" title="D 转 180 度">2</button>
+          <button data-move="D" data-turn="1" title="D 顺时针">↻</button>
+        </div>
+      </section>
 
-          <section class="panel-section">
-            <h2>记录</h2>
-            <ol id="historyList" class="history-list" aria-label="转动记录"></ol>
-          </section>
-        </aside>
+      <section class="playbar" aria-label="局面控制">
+        <div class="actions">
+          <button id="scrambleButton">打乱</button>
+          <button id="undoButton">撤销</button>
+          <button id="resetButton">复原</button>
+        </div>
+        <label class="range-row">
+          <span>打乱步数</span>
+          <input id="scrambleRange" type="range" min="8" max="40" value="22" />
+          <strong id="scrambleValue">22</strong>
+        </label>
+        <label class="switch-row">
+          <span>动画</span>
+          <input id="animationToggle" type="checkbox" checked />
+        </label>
+        <ol id="historyList" class="history-list" aria-label="转动记录"></ol>
       </section>
     </main>
 
-    <script src="./app.js"></script>
+    <script src="./app.js?v=orbit-redesign"></script>
   </body>
 </html>

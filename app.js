@@ -1,35 +1,65 @@
 const COLORS = {
-  U: "#f7d843",
-  D: "#fffdf6",
-  F: "#26b95f",
-  B: "#2867dc",
-  R: "#e73838",
-  L: "#ff8a24",
+  U: "#ffe43a",
+  D: "#ff21d8",
+  F: "#22d8e9",
+  B: "#2134e8",
+  R: "#f02828",
+  L: "#18c64e",
 };
 
 const FACE_INFO = {
-  U: { axis: "y", sign: 1, label: "U" },
-  D: { axis: "y", sign: -1, label: "D" },
-  F: { axis: "z", sign: 1, label: "F" },
-  B: { axis: "z", sign: -1, label: "B" },
-  R: { axis: "x", sign: 1, label: "R" },
-  L: { axis: "x", sign: -1, label: "L" },
-};
-
-const FACE_LAYOUT = {
-  U: { x: 410, y: 70 },
-  L: { x: 190, y: 290 },
-  F: { x: 410, y: 290 },
-  R: { x: 630, y: 290 },
-  B: { x: 850, y: 290 },
-  D: { x: 410, y: 510 },
+  U: { axis: "y", sign: 1 },
+  D: { axis: "y", sign: -1 },
+  F: { axis: "z", sign: 1 },
+  B: { axis: "z", sign: -1 },
+  R: { axis: "x", sign: 1 },
+  L: { axis: "x", sign: -1 },
 };
 
 const FACE_ORDER = ["U", "L", "F", "R", "B", "D"];
-const SIZE = 174;
-const GAP = SIZE / 3;
-const CENTER_OFFSET = GAP / 2;
 const MOVE_KEYS = new Set(["U", "D", "L", "R", "F", "B"]);
+
+const DIAGRAM_POINTS = {
+  U: [
+    [{ x: 400, y: 172 }, { x: 500, y: 135 }, { x: 600, y: 172 }],
+    [{ x: 370, y: 250 }, { x: 500, y: 224 }, { x: 630, y: 250 }],
+    [{ x: 420, y: 330 }, { x: 500, y: 315 }, { x: 580, y: 330 }],
+  ],
+  L: [
+    [{ x: 160, y: 246 }, { x: 238, y: 210 }, { x: 318, y: 234 }],
+    [{ x: 132, y: 338 }, { x: 228, y: 332 }, { x: 324, y: 344 }],
+    [{ x: 170, y: 426 }, { x: 252, y: 468 }, { x: 342, y: 438 }],
+  ],
+  F: [
+    [{ x: 354, y: 294 }, { x: 426, y: 276 }, { x: 494, y: 286 }],
+    [{ x: 338, y: 386 }, { x: 420, y: 372 }, { x: 498, y: 366 }],
+    [{ x: 376, y: 474 }, { x: 448, y: 512 }, { x: 526, y: 500 }],
+  ],
+  R: [
+    [{ x: 682, y: 234 }, { x: 762, y: 210 }, { x: 840, y: 246 }],
+    [{ x: 676, y: 344 }, { x: 772, y: 332 }, { x: 868, y: 338 }],
+    [{ x: 658, y: 438 }, { x: 748, y: 468 }, { x: 830, y: 426 }],
+  ],
+  B: [
+    [{ x: 506, y: 286 }, { x: 574, y: 276 }, { x: 646, y: 294 }],
+    [{ x: 502, y: 366 }, { x: 580, y: 372 }, { x: 662, y: 386 }],
+    [{ x: 474, y: 500 }, { x: 552, y: 512 }, { x: 624, y: 474 }],
+  ],
+  D: [
+    [{ x: 420, y: 452 }, { x: 500, y: 438 }, { x: 580, y: 452 }],
+    [{ x: 370, y: 530 }, { x: 500, y: 545 }, { x: 630, y: 530 }],
+    [{ x: 400, y: 608 }, { x: 500, y: 648 }, { x: 600, y: 608 }],
+  ],
+};
+
+const FACE_LABELS = {
+  U: { x: 500, y: 82 },
+  L: { x: 80, y: 345 },
+  F: { x: 420, y: 250 },
+  R: { x: 920, y: 345 },
+  B: { x: 584, y: 250 },
+  D: { x: 500, y: 704 },
+};
 
 const cube2d = document.querySelector("#cube2d");
 const cube3d = document.querySelector("#cube3d");
@@ -44,7 +74,6 @@ const scrambleValue = document.querySelector("#scrambleValue");
 const animationToggle = document.querySelector("#animationToggle");
 
 let stickers = createSolvedCube();
-let selectedTurn = 1;
 let history = [];
 let undoStack = [];
 let isAnimating = false;
@@ -179,9 +208,9 @@ function render(animate = false) {
 
 function render2D(facelets, animate) {
   cube2d.innerHTML = "";
-
-  drawNetLines();
-  FACE_ORDER.forEach((face) => drawFace(face, facelets[face]));
+  drawOrbitLines();
+  drawFaceLabels();
+  FACE_ORDER.forEach((face) => drawFaceStickers(face, facelets[face]));
 
   if (animate) {
     isAnimating = true;
@@ -189,98 +218,68 @@ function render2D(facelets, animate) {
     window.setTimeout(() => {
       cube2d.classList.remove("is-animating");
       isAnimating = false;
-    }, 170);
+    }, 180);
   }
 }
 
-function drawNetLines() {
+function drawOrbitLines() {
   const paths = [
-    "M497 244 C498 202 498 176 497 158",
-    "M410 377 C360 376 310 376 278 377",
-    "M584 377 C621 377 659 377 718 377",
-    "M805 377 C845 377 884 377 938 377",
-    "M497 464 C498 503 498 533 497 596",
-    "M278 377 C332 213 659 211 718 377",
-    "M278 377 C334 545 660 542 718 377",
-    "M410 377 C446 219 767 223 938 377",
-    "M410 377 C448 534 768 530 938 377",
+    ["major", "M178 470 C70 260 238 55 500 58 C762 55 930 260 822 470"],
+    ["major", "M122 324 C178 72 575 83 664 324 C720 500 558 657 390 616 C210 572 62 470 122 324"],
+    ["major", "M878 324 C822 72 425 83 336 324 C280 500 442 657 610 616 C790 572 938 470 878 324"],
+    ["major", "M178 460 C250 704 750 704 822 460"],
+    ["inner", "M265 420 C205 264 320 128 500 122 C680 128 795 264 735 420"],
+    ["inner", "M225 352 C270 180 555 178 620 352 C654 450 560 548 455 520"],
+    ["inner", "M775 352 C730 180 445 178 380 352 C346 450 440 548 545 520"],
+    ["", "M140 338 C300 318 392 340 500 366 C608 340 700 318 860 338"],
+    ["", "M170 430 C320 455 396 488 500 545 C604 488 680 455 830 430"],
+    ["", "M318 234 C425 266 575 266 682 234"],
+    ["", "M342 438 C436 386 564 386 658 438"],
+    ["inner", "M500 122 C438 230 438 460 500 648"],
+    ["inner", "M500 122 C562 230 562 460 500 648"],
   ];
 
-  paths.forEach((d) => cube2d.append(svgEl("path", { class: "net-line", d })));
+  paths.forEach(([kind, d]) => {
+    cube2d.append(svgEl("path", { class: `orbit-line ${kind}`.trim(), d }));
+  });
 }
 
-function drawFace(face, grid) {
-  const origin = FACE_LAYOUT[face];
-
-  cube2d.append(
-    svgEl("rect", {
-      class: "face-plate",
-      x: origin.x - 15,
-      y: origin.y - 15,
-      width: SIZE + 30,
-      height: SIZE + 30,
-      rx: 8,
-    }),
-  );
-
-  const labelY = face === "D" ? origin.y + SIZE + 34 : origin.y - 38;
-  const title = svgEl("text", {
-    class: "face-title",
-    x: origin.x + SIZE / 2,
-    y: labelY,
+function drawFaceLabels() {
+  Object.entries(FACE_LABELS).forEach(([face, point]) => {
+    const label = svgEl("text", {
+      class: "face-label",
+      x: point.x,
+      y: point.y,
+    });
+    label.textContent = face;
+    cube2d.append(label);
   });
-  title.textContent = face;
-  cube2d.append(title);
+}
 
+function drawFaceStickers(face, grid) {
   for (let row = 0; row < 3; row += 1) {
     for (let col = 0; col < 3; col += 1) {
-      const cx = origin.x + col * GAP + CENTER_OFFSET;
-      const cy = origin.y + row * GAP + CENTER_OFFSET;
+      const point = DIAGRAM_POINTS[face][row][col];
+      cube2d.append(
+        svgEl("circle", {
+          class: "sticker-shadow",
+          cx: point.x + 3,
+          cy: point.y + 4,
+          r: 17.5,
+        }),
+      );
       cube2d.append(
         svgEl("circle", {
           class: "sticker",
-          cx,
-          cy,
-          r: 23,
+          cx: point.x,
+          cy: point.y,
+          r: 17,
           fill: COLORS[grid[row][col]],
           "data-face": face,
         }),
       );
     }
   }
-
-  for (let i = 1; i < 3; i += 1) {
-    cube2d.append(
-      svgEl("line", {
-        class: "cell-line",
-        x1: origin.x + i * GAP,
-        y1: origin.y,
-        x2: origin.x + i * GAP,
-        y2: origin.y + SIZE,
-      }),
-    );
-    cube2d.append(
-      svgEl("line", {
-        class: "cell-line",
-        x1: origin.x,
-        y1: origin.y + i * GAP,
-        x2: origin.x + SIZE,
-        y2: origin.y + i * GAP,
-      }),
-    );
-  }
-
-  cube2d.append(
-    svgEl("rect", {
-      class: "face-hotspot",
-      x: origin.x - 15,
-      y: origin.y - 15,
-      width: SIZE + 30,
-      height: SIZE + 30,
-      rx: 8,
-      "data-face": face,
-    }),
-  );
 }
 
 function render3D(facelets) {
@@ -289,9 +288,9 @@ function render3D(facelets) {
 
   for (let row = 0; row < 3; row += 1) {
     for (let col = 0; col < 3; col += 1) {
-      polygons.push({ face: "U", row, col, points: cell3D("U", row, col), color: facelets.U[row][col] });
-      polygons.push({ face: "F", row, col, points: cell3D("F", row, col), color: facelets.F[row][col] });
-      polygons.push({ face: "R", row, col, points: cell3D("R", row, col), color: facelets.R[row][col] });
+      polygons.push({ points: cell3D("U", row, col), color: facelets.U[row][col] });
+      polygons.push({ points: cell3D("F", row, col), color: facelets.F[row][col] });
+      polygons.push({ points: cell3D("R", row, col), color: facelets.R[row][col] });
     }
   }
 
@@ -374,7 +373,7 @@ function renderStatus(facelets) {
 
 function renderHistory() {
   historyList.innerHTML = "";
-  history.slice(-28).forEach((move) => {
+  history.slice(-36).forEach((move) => {
     const item = document.createElement("li");
     item.textContent = move;
     historyList.append(item);
@@ -416,31 +415,22 @@ function undo() {
   render(true);
 }
 
-document.querySelectorAll(".mode-button").forEach((button) => {
+document.querySelectorAll("[data-move][data-turn]").forEach((button) => {
   button.addEventListener("click", () => {
-    selectedTurn = Number(button.dataset.turn);
-    document.querySelectorAll(".mode-button").forEach((candidate) => {
-      const active = candidate === button;
-      candidate.classList.toggle("active", active);
-      candidate.setAttribute("aria-pressed", String(active));
-    });
+    applyMove(button.dataset.move, Number(button.dataset.turn));
   });
-});
-
-document.querySelectorAll("[data-move]").forEach((button) => {
-  button.addEventListener("click", () => applyMove(button.dataset.move, selectedTurn));
 });
 
 cube2d.addEventListener("click", (event) => {
   const face = event.target.dataset.face;
-  if (face) applyMove(face, selectedTurn);
+  if (face) applyMove(face, 1);
 });
 
 window.addEventListener("keydown", (event) => {
   const key = event.key.toUpperCase();
   if (!MOVE_KEYS.has(key)) return;
   event.preventDefault();
-  applyMove(key, event.shiftKey ? -1 : selectedTurn);
+  applyMove(key, event.shiftKey ? -1 : 1);
 });
 
 scrambleButton.addEventListener("click", scramble);
