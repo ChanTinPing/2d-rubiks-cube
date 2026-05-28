@@ -69,6 +69,7 @@ const CONTROL_TURNS = [
 
 const cube2d = document.querySelector("#cube2d");
 const cube3d = document.querySelector("#cube3d");
+const boardStage = document.querySelector(".board-stage");
 const statusText = document.querySelector("#statusText");
 const moveCount = document.querySelector("#moveCount");
 const historyList = document.querySelector("#historyList");
@@ -490,3 +491,8 @@ window.__cubeGame = {
 };
 
 render(false);
+window.setTimeout(() => {
+  if (boardStage.scrollWidth > boardStage.clientWidth) {
+    boardStage.scrollLeft = (boardStage.scrollWidth - boardStage.clientWidth) / 2;
+  }
+}, 0);
