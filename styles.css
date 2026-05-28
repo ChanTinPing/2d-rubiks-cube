@@ -192,106 +192,41 @@ h1 {
   stroke-width: 4;
 }
 
-.face-label {
-  fill: rgba(0, 0, 0, 0.58);
-  font-size: 20px;
+.svg-control-pill {
+  fill: rgba(255, 255, 255, 0.9);
+  stroke: rgba(0, 0, 0, 0.12);
+  stroke-width: 1.2;
+}
+
+.svg-face-badge {
+  stroke: rgba(0, 0, 0, 0.16);
+  stroke-width: 1.2;
+}
+
+.svg-control-hit {
+  fill: #ffffff;
+  stroke: rgba(0, 0, 0, 0.14);
+  stroke-width: 1.2;
+  cursor: pointer;
+}
+
+.svg-control-hit:hover {
+  fill: #f4f4f4;
+  stroke: rgba(0, 0, 0, 0.34);
+}
+
+.svg-control-text,
+.svg-badge-text {
+  fill: #111111;
+  font-size: 17px;
   font-weight: 950;
   text-anchor: middle;
   dominant-baseline: middle;
   pointer-events: none;
 }
 
-.face-control {
-  position: absolute;
-  z-index: 5;
-  display: grid;
-  grid-template-columns: 34px repeat(3, 36px);
-  gap: 5px;
-  align-items: center;
-  padding: 5px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.86);
-  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(14px);
-}
-
-.face-control span {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 999px;
-  color: #ffffff;
-  font-weight: 950;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
-}
-
-.face-control button {
-  width: 36px;
-  height: 34px;
-  min-width: 0;
-  border-radius: 999px;
-  font-weight: 900;
-  line-height: 1;
-}
-
-.face-u {
-  left: 43%;
-  top: 12px;
-}
-
-.face-u span {
-  background: var(--u);
-  color: #111111;
-  text-shadow: none;
-}
-
-.face-l {
-  left: 16px;
-  top: 42%;
-}
-
-.face-l span {
-  background: var(--l);
-}
-
-.face-f {
-  left: 22%;
-  top: 68%;
-}
-
-.face-f span {
-  background: var(--f);
-  color: #111111;
-  text-shadow: none;
-}
-
-.face-r {
-  right: 16px;
-  top: 62%;
-}
-
-.face-r span {
-  background: var(--r);
-}
-
-.face-b {
-  right: 16px;
-  top: 50%;
-}
-
-.face-b span {
-  background: var(--b);
-}
-
-.face-d {
-  left: 43%;
-  bottom: 14px;
-}
-
-.face-d span {
-  background: var(--d);
+.svg-badge-text.light {
+  fill: #ffffff;
 }
 
 .playbar {
@@ -420,29 +355,6 @@ input[type="checkbox"] {
     grid-template-columns: repeat(3, 1fr);
   }
 
-  .face-control {
-    grid-template-columns: 30px repeat(3, 32px);
-  }
-
-  .face-control span {
-    width: 30px;
-    height: 30px;
-  }
-
-  .face-control button {
-    width: 32px;
-    height: 30px;
-  }
-
-  .face-r {
-    right: 8px;
-    top: 58%;
-  }
-
-  .face-b {
-    right: 8px;
-    top: 45%;
-  }
 }
 
 @media (max-width: 620px) {
@@ -456,17 +368,4 @@ input[type="checkbox"] {
     min-height: 500px;
   }
 
-  .face-control {
-    transform: scale(0.9);
-    transform-origin: center;
-  }
-
-  .face-u,
-  .face-d {
-    left: 34%;
-  }
-
-  .face-f {
-    left: 30%;
-  }
 }

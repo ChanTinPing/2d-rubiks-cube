@@ -21,45 +21,51 @@ const MOVE_KEYS = new Set(["U", "D", "L", "R", "F", "B"]);
 
 const DIAGRAM_POINTS = {
   U: [
-    [{ x: 400, y: 172 }, { x: 500, y: 135 }, { x: 600, y: 172 }],
-    [{ x: 370, y: 250 }, { x: 500, y: 224 }, { x: 630, y: 250 }],
-    [{ x: 420, y: 330 }, { x: 500, y: 315 }, { x: 580, y: 330 }],
+    [{ x: 410, y: 150 }, { x: 500, y: 128 }, { x: 590, y: 150 }],
+    [{ x: 400, y: 235 }, { x: 500, y: 218 }, { x: 600, y: 235 }],
+    [{ x: 430, y: 315 }, { x: 500, y: 300 }, { x: 570, y: 315 }],
   ],
   L: [
-    [{ x: 160, y: 246 }, { x: 238, y: 210 }, { x: 318, y: 234 }],
-    [{ x: 132, y: 338 }, { x: 228, y: 332 }, { x: 324, y: 344 }],
-    [{ x: 170, y: 426 }, { x: 252, y: 468 }, { x: 342, y: 438 }],
+    [{ x: 185, y: 245 }, { x: 265, y: 205 }, { x: 335, y: 250 }],
+    [{ x: 130, y: 335 }, { x: 245, y: 335 }, { x: 345, y: 360 }],
+    [{ x: 185, y: 425 }, { x: 275, y: 500 }, { x: 360, y: 455 }],
   ],
   F: [
-    [{ x: 354, y: 294 }, { x: 426, y: 276 }, { x: 494, y: 286 }],
-    [{ x: 338, y: 386 }, { x: 420, y: 372 }, { x: 498, y: 366 }],
-    [{ x: 376, y: 474 }, { x: 448, y: 512 }, { x: 526, y: 500 }],
+    [{ x: 300, y: 285 }, { x: 375, y: 270 }, { x: 460, y: 275 }],
+    [{ x: 285, y: 392 }, { x: 390, y: 395 }, { x: 470, y: 382 }],
+    [{ x: 330, y: 505 }, { x: 410, y: 545 }, { x: 475, y: 490 }],
   ],
   R: [
-    [{ x: 682, y: 234 }, { x: 762, y: 210 }, { x: 840, y: 246 }],
-    [{ x: 676, y: 344 }, { x: 772, y: 332 }, { x: 868, y: 338 }],
-    [{ x: 658, y: 438 }, { x: 748, y: 468 }, { x: 830, y: 426 }],
+    [{ x: 665, y: 250 }, { x: 735, y: 205 }, { x: 815, y: 245 }],
+    [{ x: 655, y: 360 }, { x: 755, y: 335 }, { x: 870, y: 335 }],
+    [{ x: 640, y: 455 }, { x: 725, y: 500 }, { x: 815, y: 425 }],
   ],
   B: [
-    [{ x: 506, y: 286 }, { x: 574, y: 276 }, { x: 646, y: 294 }],
-    [{ x: 502, y: 366 }, { x: 580, y: 372 }, { x: 662, y: 386 }],
-    [{ x: 474, y: 500 }, { x: 552, y: 512 }, { x: 624, y: 474 }],
+    [{ x: 540, y: 275 }, { x: 625, y: 270 }, { x: 700, y: 285 }],
+    [{ x: 530, y: 382 }, { x: 610, y: 395 }, { x: 715, y: 392 }],
+    [{ x: 525, y: 490 }, { x: 590, y: 545 }, { x: 670, y: 505 }],
   ],
   D: [
-    [{ x: 420, y: 452 }, { x: 500, y: 438 }, { x: 580, y: 452 }],
-    [{ x: 370, y: 530 }, { x: 500, y: 545 }, { x: 630, y: 530 }],
-    [{ x: 400, y: 608 }, { x: 500, y: 648 }, { x: 600, y: 608 }],
+    [{ x: 380, y: 585 }, { x: 500, y: 565 }, { x: 620, y: 585 }],
+    [{ x: 405, y: 650 }, { x: 500, y: 680 }, { x: 595, y: 650 }],
+    [{ x: 430, y: 725 }, { x: 500, y: 735 }, { x: 570, y: 725 }],
   ],
 };
 
-const FACE_LABELS = {
-  U: { x: 500, y: 82 },
-  L: { x: 80, y: 345 },
-  F: { x: 420, y: 250 },
-  R: { x: 920, y: 345 },
-  B: { x: 584, y: 250 },
-  D: { x: 500, y: 704 },
+const SVG_CONTROLS = {
+  U: { x: 445, y: 56 },
+  L: { x: 45, y: 552 },
+  F: { x: 235, y: 625 },
+  B: { x: 828, y: 495 },
+  R: { x: 828, y: 592 },
+  D: { x: 688, y: 704 },
 };
+
+const CONTROL_TURNS = [
+  { amount: -1, label: "↺" },
+  { amount: 2, label: "2" },
+  { amount: 1, label: "↻" },
+];
 
 const cube2d = document.querySelector("#cube2d");
 const cube3d = document.querySelector("#cube3d");
@@ -209,8 +215,8 @@ function render(animate = false) {
 function render2D(facelets, animate) {
   cube2d.innerHTML = "";
   drawOrbitLines();
-  drawFaceLabels();
   FACE_ORDER.forEach((face) => drawFaceStickers(face, facelets[face]));
+  drawMoveControls();
 
   if (animate) {
     isAnimating = true;
@@ -220,6 +226,54 @@ function render2D(facelets, animate) {
       isAnimating = false;
     }, 180);
   }
+}
+
+function drawMoveControls() {
+  Object.entries(SVG_CONTROLS).forEach(([face, origin]) => {
+    const group = svgEl("g", { class: "svg-face-control" });
+    group.append(
+      svgEl("rect", {
+        class: "svg-control-pill",
+        x: origin.x - 24,
+        y: origin.y - 23,
+        width: 160,
+        height: 46,
+        rx: 23,
+      }),
+    );
+    group.append(
+      svgEl("circle", {
+        class: "svg-face-badge",
+        cx: origin.x,
+        cy: origin.y,
+        r: 18,
+        fill: COLORS[face],
+      }),
+    );
+    const badgeText = svgEl("text", {
+      class: `svg-badge-text ${face === "U" || face === "F" ? "" : "light"}`.trim(),
+      x: origin.x,
+      y: origin.y + 1,
+    });
+    badgeText.textContent = face;
+    group.append(badgeText);
+
+    CONTROL_TURNS.forEach((turn, index) => {
+      const cx = origin.x + 42 + index * 38;
+      const action = svgEl("g", {
+        "data-move": face,
+        "data-turn": turn.amount,
+        "aria-label": `${face} ${turn.label}`,
+      });
+      action.append(svgEl("circle", { class: "svg-control-hit", cx, cy: origin.y, r: 17 }));
+      const text = svgEl("text", { class: "svg-control-text", x: cx, y: origin.y + 1 });
+      text.textContent = turn.label;
+      action.append(text);
+      group.append(action);
+    });
+
+    cube2d.append(group);
+  });
 }
 
 function drawOrbitLines() {
@@ -241,18 +295,6 @@ function drawOrbitLines() {
 
   paths.forEach(([kind, d]) => {
     cube2d.append(svgEl("path", { class: `orbit-line ${kind}`.trim(), d }));
-  });
-}
-
-function drawFaceLabels() {
-  Object.entries(FACE_LABELS).forEach(([face, point]) => {
-    const label = svgEl("text", {
-      class: "face-label",
-      x: point.x,
-      y: point.y,
-    });
-    label.textContent = face;
-    cube2d.append(label);
   });
 }
 
@@ -415,13 +457,13 @@ function undo() {
   render(true);
 }
 
-document.querySelectorAll("[data-move][data-turn]").forEach((button) => {
-  button.addEventListener("click", () => {
-    applyMove(button.dataset.move, Number(button.dataset.turn));
-  });
-});
-
 cube2d.addEventListener("click", (event) => {
+  const action = event.target.closest("[data-move][data-turn]");
+  if (action) {
+    applyMove(action.dataset.move, Number(action.dataset.turn));
+    return;
+  }
+
   const face = event.target.dataset.face;
   if (face) applyMove(face, 1);
 });
