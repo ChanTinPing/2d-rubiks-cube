@@ -84,6 +84,7 @@ let stickers = createSolvedCube();
 let history = [];
 let undoStack = [];
 let isAnimating = false;
+let selectedFace = null;
 
 function createSolvedCube() {
   const result = [];
@@ -217,7 +218,7 @@ function render2D(facelets, animate) {
   cube2d.innerHTML = "";
   drawOrbitLines();
   FACE_ORDER.forEach((face) => drawFaceStickers(face, facelets[face]));
-  drawMoveControls();
+  if (selectedFace) drawMoveControl(selectedFace);
 
   if (animate) {
     isAnimating = true;
@@ -229,52 +230,51 @@ function render2D(facelets, animate) {
   }
 }
 
-function drawMoveControls() {
-  Object.entries(SVG_CONTROLS).forEach(([face, origin]) => {
-    const group = svgEl("g", { class: "svg-face-control" });
-    group.append(
-      svgEl("rect", {
-        class: "svg-control-pill",
-        x: origin.x - 24,
-        y: origin.y - 23,
-        width: 160,
-        height: 46,
-        rx: 23,
-      }),
-    );
-    group.append(
-      svgEl("circle", {
-        class: "svg-face-badge",
-        cx: origin.x,
-        cy: origin.y,
-        r: 18,
-        fill: COLORS[face],
-      }),
-    );
-    const badgeText = svgEl("text", {
-      class: `svg-badge-text ${face === "U" || face === "F" ? "" : "light"}`.trim(),
-      x: origin.x,
-      y: origin.y + 1,
-    });
-    badgeText.textContent = face;
-    group.append(badgeText);
-
-    CONTROL_TURNS.forEach((turn, index) => {
-      const cx = origin.x + 42 + index * 38;
-      const action = svgEl("g", {
-        "data-move": face,
-        "data-turn": turn.amount,
-        "aria-label": `${face} ${turn.label}`,
-      });
-      action.append(svgEl("circle", { class: "svg-control-hit", cx, cy: origin.y, r: 17 }));
-      const text = svgEl("text", { class: "svg-control-text", x: cx, y: origin.y + 1 });
-      text.textContent = turn.label;
-      action.append(text);
-      group.append(action);
-    });
-
-    cube2d.append(group);
+function drawMoveControl(face) {
+  const origin = SVG_CONTROLS[face];
+  const group = svgEl("g", { class: "svg-face-control selected-control" });
+  group.append(
+    svgEl("rect", {
+      class: "svg-control-pill",
+      x: origin.x - 24,
+      y: origin.y - 23,
+      width: 160,
+      height: 46,
+      rx: 23,
+    }),
+  );
+  group.append(
+    svgEl("circle", {
+      class: "svg-face-badge",
+      cx: origin.x,
+      cy: origin.y,
+      r: 18,
+      fill: COLORS[face],
+    }),
+  );
+  const badgeText = svgEl("text", {
+    class: `svg-badge-text ${face === "U" || face === "F" ? "" : "light"}`.trim(),
+    x: origin.x,
+    y: origin.y + 1,
   });
+  badgeText.textContent = face;
+  group.append(badgeText);
+
+  CONTROL_TURNS.forEach((turn, index) => {
+    const cx = origin.x + 42 + index * 38;
+    const action = svgEl("g", {
+      "data-move": face,
+      "data-turn": turn.amount,
+      "aria-label": `${face} ${turn.label}`,
+    });
+    action.append(svgEl("circle", { class: "svg-control-hit", cx, cy: origin.y, r: 17 }));
+    const text = svgEl("text", { class: "svg-control-text", x: cx, y: origin.y + 1 });
+    text.textContent = turn.label;
+    action.append(text);
+    group.append(action);
+  });
+
+  cube2d.append(group);
 }
 
 function drawOrbitLines() {
@@ -313,7 +313,7 @@ function drawFaceStickers(face, grid) {
       );
       cube2d.append(
         svgEl("circle", {
-          class: "sticker",
+          class: `sticker ${selectedFace === face ? "selected-sticker" : ""}`.trim(),
           cx: point.x,
           cy: point.y,
           r: 17,
@@ -428,6 +428,7 @@ function scramble() {
   const faces = Object.keys(FACE_INFO);
   let lastFace = null;
   undoStack = [];
+  selectedFace = null;
 
   for (let i = 0; i < count; i += 1) {
     let face = faces[Math.floor(Math.random() * faces.length)];
@@ -447,6 +448,7 @@ function reset() {
   stickers = createSolvedCube();
   history = [];
   undoStack = [];
+  selectedFace = null;
   render(false);
 }
 
@@ -466,7 +468,10 @@ cube2d.addEventListener("click", (event) => {
   }
 
   const face = event.target.dataset.face;
-  if (face) applyMove(face, 1);
+  if (face) {
+    selectedFace = face;
+    render(false);
+  }
 });
 
 window.addEventListener("keydown", (event) => {
