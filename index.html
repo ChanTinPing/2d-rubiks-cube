@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>2D Rubik's Cube</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <main class="board-area" aria-label="2D Rubik's Cube board">
+        <svg id="cubeBoard" class="cube-board" viewBox="0 0 900 900" role="img" aria-label="Interactive 2D Rubik's Cube">
+          <defs>
+            <filter id="nodeShadow" x="-80%" y="-80%" width="260%" height="260%">
+              <feDropShadow dx="0" dy="5" stdDeviation="6" flood-color="#02040a" flood-opacity="0.55"></feDropShadow>
+            </filter>
+            <radialGradient id="nodeShine" cx="35%" cy="28%" r="70%">
+              <stop offset="0%" stop-color="#ffffff" stop-opacity="0.55"></stop>
+              <stop offset="42%" stop-color="#ffffff" stop-opacity="0.1"></stop>
+              <stop offset="100%" stop-color="#000000" stop-opacity="0.18"></stop>
+            </radialGradient>
+            <marker id="orbitArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#d5deff"></path>
+            </marker>
+          </defs>
+          <g id="trackLayer"></g>
+          <g id="nodeLayer"></g>
+          <g id="controlLayer"></g>
+        </svg>
+        <div id="victoryToast" class="victory-toast" hidden>
+          <strong>Solved</strong>
+          <span>Clean cube, clean orbit.</span>
+        </div>
+      </main>
+
+      <aside class="game-panel" aria-label="Game controls and status">
+        <div class="status-grid">
+          <section class="metric">
+            <span>Moves</span>
+            <strong id="moveCount">0</strong>
+          </section>
+          <section class="metric">
+            <span>Time</span>
+            <strong id="timer">00:00</strong>
+          </section>
+        </div>
+
+        <label class="difficulty-label" for="difficultySelect">Difficulty</label>
+        <select id="difficultySelect" class="difficulty-select">
+          <option value="easy">Easy</option>
+          <option value="standard" selected>Standard</option>
+          <option value="hard">Hard</option>
+        </select>
+
+        <div class="control-grid">
+          <button id="scrambleBtn" type="button">
+            <span aria-hidden="true">&#10536;</span>
+            Scramble
+          </button>
+          <button id="undoBtn" type="button">
+            <span aria-hidden="true">&#8630;</span>
+            Undo
+          </button>
+          <button id="redoBtn" type="button">
+            <span aria-hidden="true">&#8631;</span>
+            Redo
+          </button>
+          <button id="resetBtn" type="button">
+            <span aria-hidden="true">&#10226;</span>
+            Reset
+          </button>
+          <button id="newGameBtn" type="button" class="wide">
+            <span aria-hidden="true">&#10022;</span>
+            New Game
+          </button>
+          <button id="helpBtn" type="button" class="icon-only" aria-label="Help" title="Help">?</button>
+        </div>
+
+        <section class="history-card" aria-label="Recent moves">
+          <div class="panel-heading">
+            <span>Recent</span>
+            <strong id="statusText">Ready</strong>
+          </div>
+          <ol id="moveHistory" class="move-history"></ol>
+        </section>
+
+        <section class="preview-card" aria-label="Reference cube preview">
+          <div class="mini-cube" aria-hidden="true">
+            <div class="mini-face mini-top"></div>
+            <div class="mini-face mini-left"></div>
+            <div class="mini-face mini-right"></div>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <dialog id="helpDialog" class="help-dialog">
+      <form method="dialog">
+        <button class="dialog-close" aria-label="Close" title="Close">&times;</button>
+      </form>
+      <h2>Orbit Controls</h2>
+      <p>Hover an orbit to preview its legal cube move. Click an arrow or drag the orbit to commit one quarter turn.</p>
+      <p>Every move uses the same internal 54-sticker cube model as a real 3x3x3 cube.</p>
+    </dialog>
+
+    <script src="app.js" type="module"></script>
+  </body>
+</html>
